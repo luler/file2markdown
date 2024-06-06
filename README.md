@@ -6,6 +6,8 @@
 
 ### 方式一：本地python环境启动
 
+注意：在安装python包之前需要安装libreoffice+pandoc环境，这里省略了...
+
 安装所需软件包
 
 ``` 
