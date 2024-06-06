@@ -8,6 +8,11 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 
 app = FastAPI()
 
+pandoc_supports = ['biblatex', 'bibtex', 'commonmark', 'commonmark_x', 'creole', 'csljson', 'csv', 'docbook', 'docx',
+                   'dokuwiki', 'epub', 'fb2', 'gfm', 'haddock', 'html', 'ipynb', 'jats', 'jira', 'json', 'latex', 'man',
+                   'markdown', 'markdown_github', 'markdown_mmd', 'markdown_phpextra', 'markdown_strict', 'mediawiki',
+                   'muse', 'native', 'odt', 'opml', 'org', 'rst', 't2t', 'textile', 'tikiwiki', 'twiki', 'vimwiki']
+
 
 # 异步函数，用于保存上传的文件到临时目录
 async def save_upload_file(upload_file: UploadFile) -> str:
@@ -29,9 +34,9 @@ def convert_to_html(input_file_path: str) -> str:
     return f"{base_name}.html"  # 返回生成的HTML文件路径
 
 
-# 将HTML文件转换为Markdown文件
-def convert_html_to_md(html_file_path: str):
-    return pypandoc.convert_file(html_file_path, 'commonmark')  # 使用pypandoc进行转换
+# 将文件转换为Markdown文件
+def convert_to_md(file_path: str):
+    return pypandoc.convert_file(file_path, 'commonmark')  # 使用pypandoc进行转换
 
 
 # 读取文件内容
@@ -50,10 +55,16 @@ async def convert_file(file: List[UploadFile] = File(...)):
             raise Exception("Only one file can be uploaded at a time")
         file = file[0]
 
+        ext_name = os.path.splitext(file.filename)[1].strip('.')
         temp_input_file_path = await save_upload_file(file)  # 保存上传的文件
-        temp_html_path = convert_to_html(temp_input_file_path)  # 转换为HTML
 
-        markdown_content = convert_html_to_md(temp_html_path)  # 将HTML转换为Markdown
+        if ext_name in pandoc_supports:
+            # pandoc直接转markdown
+            markdown_content = convert_to_md(temp_input_file_path)  # 将HTML转换为Markdown
+        else:
+            # 先转html，再转markdown
+            temp_html_path = convert_to_html(temp_input_file_path)  # 转换为HTML
+            markdown_content = convert_to_md(temp_html_path)  # 将HTML转换为Markdown
 
         return {"markdown": markdown_content}  # 返回Markdown内容
     except subprocess.CalledProcessError as e:  # 捕获转换过程中的错误
