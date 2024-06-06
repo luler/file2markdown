@@ -2,10 +2,9 @@ version: '3'
 
 services:
   app:
-    image: registry.cn-shenzhen.aliyuncs.com/luler/linux_php_nginx:libreoffice
+    image: dreamplay/file2markdown
     ports:
-      - 8080:8000
+      - 6677:6677
     restart: always
-    privileged: true
     volumes:
       - .:/app
