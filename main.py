@@ -51,9 +51,7 @@ async def convert_file(file: List[UploadFile] = File(...)):
         file = file[0]
 
         temp_input_file_path = await save_upload_file(file)  # 保存上传的文件
-        print(temp_input_file_path)
         temp_html_path = convert_to_html(temp_input_file_path)  # 转换为HTML
-        print(temp_html_path)
 
         markdown_content = convert_html_to_md(temp_html_path)  # 将HTML转换为Markdown
 
