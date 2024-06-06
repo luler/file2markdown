@@ -2,7 +2,7 @@ version: '3'
 
 services:
   app:
-    image: dreamplay/file2markdown
+    image: dreamplay/file2markdown:latest
     ports:
       - 6677:6677
     restart: always
